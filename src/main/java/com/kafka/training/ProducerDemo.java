@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.apache.kafka.connect.json.JsonSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +32,11 @@ public class ProducerDemo {
             Thread.sleep(100);
             Employee e = new Employee();
             e.setAge(i);
-            e.setName("Lee_"+i);
-            ProducerRecord<String, String> record = new ProducerRecord<>("second_topic", Integer.toString(i),writer.writeValueAsString(e));
+            if(i%2==0)
+                e.setName("Lee_"+i);
+            else
+                e.setName("Tee_"+i);
+            ProducerRecord<String, String> record = new ProducerRecord<>("streams-plaintext-input", Integer.toString(i),writer.writeValueAsString(e));
             producer.send(record, new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata recordMetadata, Exception e) {
